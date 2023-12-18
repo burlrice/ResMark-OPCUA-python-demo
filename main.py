@@ -1,7 +1,9 @@
 import sys
 import os
+from unittest.mock import seal
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QWidget, QMenu, QToolButton, QPushButton
 from PyQt5.uic import loadUi
 
@@ -9,7 +11,9 @@ from Dialogs.QSearch import QSearch
 from Dialogs.QPreview import QPreview
 
 class QMainWnd(QMainWindow):
-    
+    push = pyqtSignal(QWidget)
+    pop = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         loadUi(os.path.join(os.path.dirname(__file__), 'form.ui'), self)
@@ -18,17 +22,23 @@ class QMainWnd(QMainWindow):
         self.back = self.centralWidget().findChildren(QPushButton, 'back')[0];
         self.back.clicked.connect(lambda: self.popNavigationStack())
            
-        self.pushNavigationStack(QPreview())
-        self.pushNavigationStack(QSearch())
-
+        self.push.connect(self.pushNavigationStack)
+        self.pop.connect(self.popNavigationStack)
+        
+        self.pushNavigationStack(QPreview(self.push, self.pop))
+        self.pushNavigationStack(QSearch(self.push, self.pop))
+    
+    @pyqtSlot()
     def pushNavigationStack(self, widget):
         for i in self.navigation:
             self.Client.layout().removeWidget(i)
             
         self.navigation.append(widget)
-        self.Client.layout().addWidget(self.navigation[len(self.navigation) - 1]);
+        current = self.navigation[len(self.navigation) - 1]
+        self.Client.layout().addWidget(current);
         self.back.setEnabled(len(self.navigation) > 1)
 
+    @pyqtSlot()
     def popNavigationStack(self):
         if len(self.navigation) > 1:
             for i in self.navigation:

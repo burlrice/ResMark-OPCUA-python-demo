@@ -7,6 +7,9 @@ from PyQt5.uic import loadUi
 from .path import resolveUi
 
 class QPreview(QtWidgets.QDialog):
-    def __init__(self):
+    def __init__(self, push, pop):
         super().__init__()
         loadUi(resolveUi('preview.ui'), self)
+
+        self.push = push
+        self.pop = pop

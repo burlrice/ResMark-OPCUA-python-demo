@@ -3,7 +3,6 @@ import re
 import socket
 import select
 import threading
-from tkinter import SE
 
 from PyQt5 import QtCore
 from PyQt5 import QtWidgets
@@ -13,14 +12,18 @@ from PyQt5.QtCore import QTimer, QSize, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QMovie, QPixmap
 
 from .path import resolveUi, resolveImage
+from printer import Printer
 
 class QSearch(QtWidgets.QDialog):
     printerDetected = pyqtSignal(str, str)
     
-    def __init__(self):
+    def __init__(self, push, pop):
         super().__init__()
         loadUi(resolveUi('search.ui'), self)
 
+        self.push = push
+        self.pop = pop
+        
         self.refresh = self.findChildren(QPushButton, 'refresh')[0];
         self.refresh.clicked.connect(self.onRefresh)
         self.printers = {}
@@ -64,7 +67,6 @@ class QSearch(QtWidgets.QDialog):
             for sock in readable:
                 data, address = udp.recvfrom(1024)
                 self.printerDetected.emit(address[0], data.decode())
-                self.printerDetected.emit(f'{address[0]} x', data.decode())
                 
         udp.close()
         
@@ -105,5 +107,11 @@ class QSearch(QtWidgets.QDialog):
     @pyqtSlot()
     def onConnect(self):
         for i in self.table.selectedIndexes():
-            print(i.row(), self.table.cellWidget(i.row(), 0).text())
-                
+            try:
+                printer = Printer(self.table.cellWidget(i.row(), 0).text())
+                if printer.GetStatusInformation() != None:
+                    self.pop.emit()
+                    break
+            except Exception as e:
+                print(e)
+                    
