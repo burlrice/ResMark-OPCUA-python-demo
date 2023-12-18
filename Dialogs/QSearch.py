@@ -106,3 +106,4 @@ class QSearch(QtWidgets.QDialog):
     def onConnect(self):
         for i in self.table.selectedIndexes():
             print(i.row(), self.table.cellWidget(i.row(), 0).text())
+                

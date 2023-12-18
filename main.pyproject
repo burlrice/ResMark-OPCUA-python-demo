@@ -1,3 +1,3 @@
 {
-    "files": ["search.ui","form.ui","QSearch.py","main.py","OpcUa.qrc","preview.ui"]
+    "files": ["search.ui","form.ui","QSearch.py","main.py","preview.ui"]
 }
