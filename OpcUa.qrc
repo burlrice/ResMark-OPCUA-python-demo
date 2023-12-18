@@ -1,5 +1,8 @@
 <RCC>
-    <qresource prefix="/new/prefix1">
+    <qresource prefix="/images">
         <file>resources/PERTINAX.jpg</file>
+        <file>resources/back.png</file>
+        <file>resources/Refresh.png</file>
+        <file>resources/loading.gif</file>
     </qresource>
 </RCC>
