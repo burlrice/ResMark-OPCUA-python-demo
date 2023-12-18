@@ -21,7 +21,34 @@
 	font-size: 18px;
 	font-family: &quot;Roboto&quot;;
 	outline: none;
-}</string>
+}
+
+QListWidget
+{
+	font-size: 24px;
+	font-family: &quot;Roboto&quot;;
+}
+
+QListWidget::item 
+{
+	height: 40px; 
+}
+
+QHeaderView::section 
+{
+	font-size: 20px;
+	font-family: &quot;Roboto&quot;;
+    height: 30px;
+    width: 40px;
+}
+
+QTableWidget
+{
+	font-size: 20px;
+	font-family: &quot;Roboto&quot;;
+    height: 50px;
+}
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="gridLayoutWidget">
