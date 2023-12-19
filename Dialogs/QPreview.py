@@ -1,15 +1,13 @@
-from calendar import c
-import imghdr
 import json
 import os
-from re import S
+import re
 import threading
 import time
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QPoint, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QImage, QMovie, QPixmap, QWheelEvent
-from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QScrollArea, QWidget
+from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QScrollArea, QToolButton, QWidget
 from PyQt5.uic import loadUi
 
 from .path import resolveUi, resolveData, resolveImage
@@ -30,6 +28,9 @@ class QPreview(QDialog):
         self.label = self.findChildren(QLabel, 'label')[0];
         self.ipAddress = self.findChildren(QLabel, 'ipAddress')[0];
         self.message = self.findChildren(QLabel, 'message')[0];
+        self.count = self.findChildren(QLabel, 'count')[0];
+        self.lineSpeed = self.findChildren(QLabel, 'lineSpeed')[0];
+        self.errors = self.findChildren(QToolButton, 'errors')[0];
         self.scrollArea = self.findChildren(QScrollArea, 'scrollArea')[0];
         self.refresh = self.findChildren(QPushButton, 'refresh')[0];
 
@@ -160,23 +161,23 @@ class QPreview(QDialog):
                 self.onRefresh()
         
             states = {
-                'Printing': 
-                { 
-                    'color': '#000000',
-                    'images': [ 'play.png', 'pause.png', 'stop.png' ]
-                    },
-                'Paused': { 
-                    'color': '#000000', 
-                    'images': [ 'play.png', 'resume.png', 'stop.png' ]
-                    },
-                'Idle': { 
-                    'color': '#000000', 
-                    'images': [ 'play.png', '', '' ]
-                    },
+                'Printing': { 'images': [ 'play.png', 'pause.png', 'stop.png' ] },
+                'Paused': { 'images': [ 'play.png', 'resume.png', 'stop.png' ] },
+                'Idle': { 'images': [ 'play.png', '', '' ] },
+                }
+            images = {
+                Printer.State.Ok: '',
+                Printer.State.Warning: 'warning.png',
+                Printer.State.Error: 'error.png',
                 }
         
-            print(json.dumps(self.state, indent=4))
-        
+            #print(json.dumps(self.state, indent=4))
+            
             self.start.setIcon(QIcon(QPixmap(resolveImage(states[self.state['State']]['images'][0]))))
             self.pause.setIcon(QIcon(QPixmap(resolveImage(states[self.state['State']]['images'][1]))))
             self.stop.setIcon(QIcon(QPixmap(resolveImage(states[self.state['State']]['images'][2]))))
+            self.count.setText(f'''Product count: {self.state['Count']}''')
+            self.lineSpeed.setText('{:.2f} f/min'.format(self.state['Line speed']))
+            
+            self.errors.setText("\n" + "\n\n".join(['\n'.join([f"{key}: {item}" for item in value]) for key, value in self.printer.errors.items()]))
+            self.errors.setIcon(QIcon(QPixmap(resolveImage(images[self.printer.GetState()]))))

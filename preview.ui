@@ -13,12 +13,27 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QLabel#count {
+    font-size: 12px;
+}
+
+QLabel#lineSpeed {
+    font-size: 12px;
+}
+
+QToolBiutton#errors {
+    font-size: 12px;
+	font-weight: bold;
+	text-align: left;
+}</string>
+  </property>
   <widget class="QLabel" name="ipAddress">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>0</y>
-     <width>371</width>
+     <width>211</width>
      <height>31</height>
     </rect>
    </property>
@@ -99,14 +114,14 @@
   <widget class="QLabel" name="message">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>230</x>
      <y>0</y>
-     <width>341</width>
+     <width>311</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string/>
    </property>
   </widget>
   <widget class="QPushButton" name="start">
@@ -176,6 +191,54 @@
      <width>48</width>
      <height>48</height>
     </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="count">
+   <property name="geometry">
+    <rect>
+     <x>600</x>
+     <y>0</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lineSpeed">
+   <property name="geometry">
+    <rect>
+     <x>600</x>
+     <y>20</y>
+     <width>141</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="errors">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>210</y>
+     <width>241</width>
+     <height>191</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>48</width>
+     <height>48</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextBesideIcon</enum>
    </property>
   </widget>
  </widget>
