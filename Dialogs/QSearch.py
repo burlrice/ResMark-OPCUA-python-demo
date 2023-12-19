@@ -17,12 +17,11 @@ from printer import Printer
 class QSearch(QtWidgets.QDialog):
     printerDetected = pyqtSignal(str, str)
     
-    def __init__(self, push, pop):
+    def __init__(self, connect):
         super().__init__()
         loadUi(resolveUi('search.ui'), self)
 
-        self.push = push
-        self.pop = pop
+        self.connect = connect
         
         self.refresh = self.findChildren(QPushButton, 'refresh')[0];
         self.refresh.clicked.connect(self.onRefresh)
@@ -108,9 +107,10 @@ class QSearch(QtWidgets.QDialog):
     def onConnect(self):
         for i in self.table.selectedIndexes():
             try:
-                printer = Printer(self.table.cellWidget(i.row(), 0).text())
+                addr = self.table.cellWidget(i.row(), 0).text()
+                printer = Printer(addr)
                 if printer.GetStatusInformation() != None:
-                    self.pop.emit()
+                    self.connect.emit(addr)
                     break
             except Exception as e:
                 print(e)

@@ -26,3 +26,9 @@ class Printer:
         result = self.callMethod('GetStatusInformation', ua.Variant(1, ua.VariantType.Int32))
         error = result[0]
         return result[1:] if len(error) == 0 else []
+    
+    def GetStoredMessageList(self):
+        result = self.callMethod('GetStoredMessageList')
+        error = result[0]
+        return result[1:][0] if len(error) == 0 else []
+            
