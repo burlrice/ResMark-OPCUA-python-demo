@@ -3,10 +3,11 @@ import imghdr
 import json
 import os
 from re import S
+import threading
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtGui import QImage, QPixmap, QWheelEvent
+from PyQt5.QtCore import Qt, QPoint, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QIcon, QImage, QMovie, QPixmap, QWheelEvent
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QScrollArea, QWidget
 from PyQt5.uic import loadUi
 
@@ -16,6 +17,7 @@ from config import Config
 
 class QPreview(QDialog):
     printer = None
+    refreshComplete = pyqtSignal(QPixmap)
     
     def __init__(self):
         super().__init__()
@@ -26,6 +28,8 @@ class QPreview(QDialog):
         self.label = self.findChildren(QLabel, 'label')[0];
         self.refresh = self.findChildren(QPushButton, 'refresh')[0];
 
+        self.refreshIcon = self.refresh.icon()
+        self.refreshComplete.connect(self.onRefreshComplete)
         self.refresh.clicked.connect(self.onRefresh)
         self.scrollArea.wheelEvent = lambda event: self.zoom(event)
         
@@ -40,12 +44,26 @@ class QPreview(QDialog):
                 config.data['address'] = ipaddr
                 
         self.onRefresh()
-        self.zoom(None)
                 
     def onRefresh(self):
-        # TODO: animate
-        self.img = QPixmap.fromImage(QImage.fromData(self.printer.PrintPreviewCurrentCompressed()))
+        self.movie = QMovie(resolveImage('Refresh.gif'))
+        self.movie.frameChanged.connect(self.onFrameChanged)
+        self.movie.start();
+        self.thread = threading.Thread(target=self.PrintPreviewCurrentCompressed)
+        self.thread.start()        
+
+    def PrintPreviewCurrentCompressed(self):
+        self.refreshComplete.emit(QPixmap.fromImage(QImage.fromData(self.printer.PrintPreviewCurrentCompressed())))
+        
+    def onFrameChanged(self):
+        self.refresh.setIcon(QIcon(self.movie.currentPixmap()))
+    
+    @pyqtSlot(QPixmap)
+    def onRefreshComplete(self, img):
+        self.img = img
         self.zoom(None)
+        self.movie.stop()
+        self.refresh.setIcon(self.refreshIcon)
         
     def zoom(self, event):
         if not hasattr(self, 'currentZoom'):
