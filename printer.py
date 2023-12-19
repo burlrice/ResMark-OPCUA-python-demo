@@ -38,10 +38,33 @@ class Printer:
         result = self.callMethod('PrintPreviewCurrentCompressed', ua.Variant(1, ua.VariantType.Int32))
         error = result[0]
 
-        if len(error) == 0:
+        if len(error) == 0 and result[2]:
             compressed = bytes(result[2]);
             decompressed = zlib.decompress(compressed, bufsize=result[1])    
 
             return decompressed
             
         return None
+    
+    def PathPrintStoredMessage(self, folder, message) -> bool:
+        result = self.callMethod('PathPrintStoredMessage', 
+                                 ua.Variant(1, ua.VariantType.Int32), 
+                                 ua.Variant(folder, ua.VariantType.String), 
+                                 ua.Variant(message, ua.VariantType.String))
+        return result == ua.StatusCodes.Good
+
+    def StopPrinting(self) -> bool:
+        result = self.callMethod('StopPrinting', ua.Variant(1, ua.VariantType.Int32))
+        
+        return len(result) == 0
+
+    def ResumePrinting(self) -> bool:
+        result = self.callMethod('ResumePrinting', ua.Variant(1, ua.VariantType.Int32))
+        
+        return len(result) == 0
+
+    def CancelPrinting(self) -> bool:
+        result = self.callMethod('CancelPrinting', ua.Variant(1, ua.VariantType.Int32))
+        
+        return len(result) == 0
+        
