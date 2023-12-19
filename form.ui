@@ -14,7 +14,16 @@
    <string>QMainWnd</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton
+   <string notr="true">QLabel
+{
+	background-color: transparent;
+	border: 0px;
+	font-size: 18px;
+	font-family: &quot;Roboto&quot;;
+	outline: none;
+}
+
+QPushButton
 {
 	background-color: transparent;
 	border: 0px;

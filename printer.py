@@ -1,3 +1,4 @@
+import zlib
 from opcua import Client, ua
 
 class Printer:
@@ -8,7 +9,8 @@ class Printer:
         
     def __init__(self, ipaddr):
         self.client = Client("opc.tcp://{}:{}".format(ipaddr, self.OPCUA.Port), timeout=20)
-        self.client.connect()
+        self.client.connect()        
+        self.name = self.callMethod('GetBroadcastingSsid')[0]
         
     def __del__(self):
         self.client.disconnect()
@@ -32,3 +34,14 @@ class Printer:
         error = result[0]
         return result[1:][0] if len(error) == 0 else []
             
+    def PrintPreviewCurrentCompressed(self):
+        result = self.callMethod('PrintPreviewCurrentCompressed', ua.Variant(1, ua.VariantType.Int32))
+        error = result[0]
+
+        if len(error) == 0:
+            compressed = bytes(result[2]);
+            decompressed = zlib.decompress(compressed, bufsize=result[1])    
+
+            return decompressed
+            
+        return None
