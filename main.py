@@ -25,7 +25,7 @@ class QMainWnd(QMainWindow):
         self.back.clicked.connect(lambda: self.onPopNavigationStack())
            
         self.search = self.centralWidget().findChildren(QPushButton, 'search')[0];
-        self.search.clicked.connect(lambda: self.onPushNavigationStack(QSearch(self.connect)))
+        self.search.clicked.connect(lambda: self.onPushNavigationStack(QSearch()))
 
         self.pushNavigationStack.connect(self.onPushNavigationStack)
         self.popNavigationStack.connect(self.onPopNavigationStack)
@@ -38,7 +38,7 @@ class QMainWnd(QMainWindow):
             self.onConnect(config.data['address'])
             self.updateWindowText()
         else:
-            self.onPushNavigationStack(QSearch(self.connect))
+            self.onPushNavigationStack(QSearch())
     
     @pyqtSlot()
     def onPushNavigationStack(self, widget):

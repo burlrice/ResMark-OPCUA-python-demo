@@ -11,18 +11,16 @@ from PyQt5.uic import loadUi
 from PyQt5.QtCore import QTimer, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QMovie, QPixmap
 
-from .path import resolveUi, resolveImage
+from .path import resolveTopMostWidget, resolveUi, resolveImage
 from printer import Printer
 
 class QSearch(QtWidgets.QDialog):
     printerDetected = pyqtSignal(str, str)
     
-    def __init__(self, connect): # TODO: drop connect, use resolveTopMostWidget
+    def __init__(self): 
         super().__init__()
         loadUi(resolveUi('search.ui'), self)
 
-        self.connect = connect
-        
         self.refresh = self.findChildren(QPushButton, 'refresh')[0];
         self.refresh.clicked.connect(self.onRefresh)
         self.printers = {}
@@ -111,7 +109,7 @@ class QSearch(QtWidgets.QDialog):
                 addr = self.table.cellWidget(i.row(), 0).text()
                 printer = Printer(addr)
                 if printer.GetStatusInformation() != None:
-                    self.connect.emit(addr)
+                    resolveTopMostWidget(self).onConnect(addr)
                     break
             except Exception as e:
                 print(e)
