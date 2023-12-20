@@ -25,7 +25,7 @@ class Printer:
         
     errors = {}
     
-    def __init__(self, ipaddr):
+    def __init__(self, ipaddr: str):
         self.client = Client("opc.tcp://{}:{}".format(ipaddr, self.OPCUA.Port), timeout=20)
         self.client.connect()        
         self.name = self.callMethod('GetBroadcastingSsid')[0]
@@ -33,7 +33,7 @@ class Printer:
     def __del__(self):
         self.client.disconnect()
 
-    def callMethod(self, methodName, *args):
+    def callMethod(self, methodName: str, *args):
         method = self.client.get_node("{};s={}".format(self.OPCUA.Namespace, methodName))
         node = self.client.get_node(self.OPCUA.ObjectId)
         
@@ -94,7 +94,7 @@ class Printer:
             
         return None
     
-    def PathPrintStoredMessage(self, folder, message) -> bool:
+    def PathPrintStoredMessage(self, folder: str, message: str) -> bool:
         result = self.callMethod('PathPrintStoredMessage', 
                                  ua.Variant(1, ua.VariantType.Int32), 
                                  ua.Variant(folder, ua.VariantType.String), 
