@@ -17,6 +17,7 @@ class QMessages(QDialog):
         
         self.findChildren(QPushButton, 'start')[0].clicked.connect(self.onStart)
         self.findChildren(QPushButton, 'cancel')[0].clicked.connect(self.onCancel)
+        self.listWidget.itemDoubleClicked.connect(lambda: self.onStart())
         
     def setVisible(self, visible: bool):
         super().setVisible(visible)
@@ -29,4 +30,4 @@ class QMessages(QDialog):
     
     def onCancel(self):
         resolveTopMostWidget(self).onPopNavigationStack()
-
+        

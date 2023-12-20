@@ -115,4 +115,15 @@ class Printer:
         result = self.callMethod('CancelPrinting', ua.Variant(1, ua.VariantType.Int32))
         
         return len(result) == 0
+    
+    def RecallMessage(self, message: str) -> str:
+        result = self.callMethod('RecallMessage', message)
+        error = result[0]
+        return result[1] if  len(error) == 0 else None
+    
+    def x(self, xml: str) -> bool:
+        error = self.callMethod('PrintPrd', ua.Variant(xml, ua.VariantType.String), ua.Variant(1, ua.VariantType.Int32))
+
+        return len(error) == 0
+    
         

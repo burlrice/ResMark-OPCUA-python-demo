@@ -64,6 +64,7 @@ class QMainWnd(QMainWindow):
         if len(self.navigation) > 1:
             for i in self.navigation:
                 self.Client.layout().removeWidget(i)
+                i.hide()
            
             self.navigation.pop(len(self.navigation) - 1)
 

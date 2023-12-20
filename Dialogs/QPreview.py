@@ -11,10 +11,12 @@ from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QScrollArea, QToolButt
 from PyQt5.uic import loadUi
 
 from Dialogs.QMessages import QMessages
+from Dialogs.busy import Busy
 
 from .path import resolveTopMostWidget, resolveUi, resolveData, resolveImage
 from printer import Printer
 from config import Config
+from message import Message
 
 class QPreview(QDialog):
     printer = None
@@ -128,17 +130,23 @@ class QPreview(QDialog):
 
     @pyqtSlot(str)
     def onStartMessage(self, message):
-        cursor = self.cursor()
-        self.setCursor(Qt.WaitCursor) 
-        self.printer.PathPrintStoredMessage('', message)
-        self.img = None
+        with Busy(self) as busy:
+            doc = Message(self.printer.RecallMessage(message))
+            
+            if len(doc.counts):
+                print('counts')
 
-        while self.img == None:
-            self.img = self.printer.PrintPreviewCurrentCompressed()
-            time.sleep(.25)
+            if len(doc.variables):
+                print('variables')
+                
+            self.printer.PathPrintStoredMessage('', message)
+            self.img = None
+
+            while self.img == None:
+                self.img = self.printer.PrintPreviewCurrentCompressed()
+                time.sleep(.25)
         
-        self.currentZoom = 1.0
-        self.setCursor(cursor)
+            self.currentZoom = 1.0
     
     def onPause(self):
         if self.state.get('State') == 'Paused':

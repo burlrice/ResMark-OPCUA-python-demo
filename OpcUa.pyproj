@@ -20,11 +20,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="config.py" />
+    <Compile Include="Dialogs\busy.py" />
     <Compile Include="Dialogs\path.py" />
     <Compile Include="Dialogs\QMessages.py" />
     <Compile Include="main.py" />
     <Compile Include="Dialogs\QPreview.py" />
     <Compile Include="Dialogs\QSearch.py" />
+    <Compile Include="message.py" />
     <Compile Include="printer.py" />
   </ItemGroup>
   <ItemGroup>
