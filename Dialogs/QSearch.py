@@ -8,7 +8,7 @@ from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QLabel, QPushButton, QTableWidget
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import QTimer, QSize, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QTimer, QSize, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QIcon, QMovie, QPixmap
 
 from .path import resolveUi, resolveImage
@@ -17,7 +17,7 @@ from printer import Printer
 class QSearch(QtWidgets.QDialog):
     printerDetected = pyqtSignal(str, str)
     
-    def __init__(self, connect):
+    def __init__(self, connect): # TODO: drop connect, use resolveTopMostWidget
         super().__init__()
         loadUi(resolveUi('search.ui'), self)
 
@@ -32,6 +32,7 @@ class QSearch(QtWidgets.QDialog):
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(['Address', 'Name', ''])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.table.horizontalHeader().setDefaultAlignment(Qt.AlignLeft);
         self.table.verticalHeader().setVisible(False)
         self.table.setShowGrid(False)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)

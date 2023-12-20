@@ -44,6 +44,7 @@ class QMainWnd(QMainWindow):
     def onPushNavigationStack(self, widget):
         for i in self.navigation:
             self.Client.layout().removeWidget(i)
+            i.hide()
             
         self.navigation.append(widget)
         current = self.navigation[len(self.navigation) - 1]
@@ -63,9 +64,12 @@ class QMainWnd(QMainWindow):
         if len(self.navigation) > 1:
             for i in self.navigation:
                 self.Client.layout().removeWidget(i)
-                
+           
             self.navigation.pop(len(self.navigation) - 1)
-            self.Client.layout().addWidget(self.navigation[len(self.navigation) - 1]);
+
+            current = self.navigation[len(self.navigation) - 1]
+            self.Client.layout().addWidget(current);
+            current.show()
         
         self.back.setEnabled(len(self.navigation) > 1)
         

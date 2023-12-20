@@ -78,7 +78,9 @@ class Printer:
     def GetStoredMessageList(self):
         result = self.callMethod('GetStoredMessageList')
         error = result[0]
-        return result[1:][0] if len(error) == 0 else []
+        result = result[1:][0] if len(error) == 0 else []
+        result = [file for file in result if not file.lower().endswith('.prd')]
+        return result
             
     def PrintPreviewCurrentCompressed(self):
         result = self.callMethod('PrintPreviewCurrentCompressed', ua.Variant(1, ua.VariantType.Int32))

@@ -13,3 +13,9 @@ def resolveData(filename):
         os.makedirs(data)
         
     return os.path.abspath(os.path.join(data, filename))
+
+def resolveTopMostWidget(widget):
+    while widget.parent():
+        widget = widget.parent()
+        
+    return widget

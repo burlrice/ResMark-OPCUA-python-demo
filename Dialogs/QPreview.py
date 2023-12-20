@@ -10,13 +10,16 @@ from PyQt5.QtGui import QIcon, QImage, QMovie, QPixmap, QWheelEvent
 from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QScrollArea, QToolButton, QWidget
 from PyQt5.uic import loadUi
 
-from .path import resolveUi, resolveData, resolveImage
+from Dialogs.QMessages import QMessages
+
+from .path import resolveTopMostWidget, resolveUi, resolveData, resolveImage
 from printer import Printer
 from config import Config
 
 class QPreview(QDialog):
     printer = None
     refreshComplete = pyqtSignal(QPixmap)
+    startMessage = pyqtSignal(str)
     status = pyqtSignal(str)
     state = {}
     lastImageHashKey = 0
@@ -39,6 +42,7 @@ class QPreview(QDialog):
         self.stop = self.findChildren(QPushButton, 'stop')[0];
 
         self.refreshComplete.connect(self.onRefreshComplete)
+        self.startMessage.connect(self.onStartMessage)
         self.status.connect(self.onStatus)
         self.refreshIcon = self.refresh.icon()
         self.scrollArea.wheelEvent = lambda event: self.zoom(event)
@@ -117,9 +121,16 @@ class QPreview(QDialog):
             self.status.emit(json.dumps(self.printer.GetStatusInformation()))
             
     def onStart(self):
+        main = resolveTopMostWidget(self);
+        messages = QMessages(self.startMessage)
+        messages.messages = self.printer.GetStoredMessageList()
+        main.onPushNavigationStack(messages)
+
+    @pyqtSlot(str)
+    def onStartMessage(self, message):
         cursor = self.cursor()
         self.setCursor(Qt.WaitCursor) 
-        self.printer.PathPrintStoredMessage('', 'Count.next')
+        self.printer.PathPrintStoredMessage('', message)
         self.img = None
 
         while self.img == None:
