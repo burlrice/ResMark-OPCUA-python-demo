@@ -1,3 +1,4 @@
+import time
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QAbstractItemView, QDialog, QHeaderView, QLabel, QLineEdit, QPushButton, QTableWidget, QTextEdit, QWidget
 from PyQt5.uic import loadUi
@@ -71,7 +72,8 @@ class QVariables(QDialog):
     
         if 'Count' in variables and len(variables) == 1:
             self.printer.PathPrintStoredMessage('', self.message.name)
-            self.printer.SetMessageCount(int(variables['Count']))
+            time.sleep(1)
+            self.printer.SetMessageCount(int(variables['Count']) - 1)
             self.printPreview.emit()
         else:
             for i in self.message.document.xpath('//ProductObject//Variables//DataSet//ColumnValues//Column'):

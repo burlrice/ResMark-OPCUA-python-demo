@@ -45,7 +45,7 @@ class QMessages(QDialog):
             else:
                 main.onPopNavigationStack()
                 self.printer.PathPrintStoredMessage('', message)
-                self.printPreview.emit(message)
+                self.printPreview.emit()
     
     def onCancel(self):
         resolveTopMostWidget(self).onPopNavigationStack()

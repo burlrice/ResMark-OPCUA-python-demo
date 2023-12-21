@@ -19,9 +19,6 @@ class QMainWnd(QMainWindow):
         super().__init__()
         loadUi(os.path.join(os.path.dirname(__file__), 'form.ui'), self)
         self.navigation = []
-        
-        self.back = self.centralWidget().findChildren(QPushButton, 'back')[0];
-        self.back.clicked.connect(lambda: self.onPopNavigationStack())
            
         self.search = self.centralWidget().findChildren(QPushButton, 'search')[0];
         self.search.clicked.connect(lambda: self.onPushNavigationStack(QSearch()))
@@ -48,7 +45,6 @@ class QMainWnd(QMainWindow):
         self.navigation.append(widget)
         current = self.navigation[len(self.navigation) - 1]
         self.Client.layout().addWidget(current);
-        self.back.setEnabled(len(self.navigation) > 1)
         self.updateWindowText()
         
     def updateWindowText(self):
@@ -70,8 +66,6 @@ class QMainWnd(QMainWindow):
             current = self.navigation[len(self.navigation) - 1]
             self.Client.layout().addWidget(current);
             current.show()
-        
-        self.back.setEnabled(len(self.navigation) > 1)
         
     def findNavigation(self, widgetType):
         return [widget for widget in self.navigation if isinstance(widget, widgetType)][0]

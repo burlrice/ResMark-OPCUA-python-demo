@@ -22,7 +22,7 @@ class QPreview(QDialog):
     printPreview = pyqtSignal()
     status = pyqtSignal(str)
     state = {}
-    lastImageHashKey = 0
+    lastImageHashKey = -1
     
     def __init__(self):
         super().__init__()
@@ -64,6 +64,7 @@ class QPreview(QDialog):
         if self.printer.GetStatusInformation() != []:
             with Config() as config:
                 config.data['address'] = ipaddr
+                self.onRefresh()
                 
     def onRefresh(self):
         self.movie = QMovie(resolveImage('Refresh.gif'))
@@ -72,11 +73,12 @@ class QPreview(QDialog):
         threading.Thread(target=self.PrintPreviewCurrentCompressed).start()
 
     def PrintPreviewCurrentCompressed(self):
-        img = self.printer.PrintPreviewCurrentCompressed()
-        if img:
-            self.refreshComplete.emit(QPixmap.fromImage(QImage.fromData(img)))
-        else:
-            self.refreshComplete.emit(QPixmap())    
+        if self.printer:
+            img = self.printer.PrintPreviewCurrentCompressed()
+            if img:
+                self.refreshComplete.emit(QPixmap.fromImage(QImage.fromData(img)))
+            else:
+                self.refreshComplete.emit(QPixmap())    
             
     def onFrameChanged(self):
         self.refresh.setIcon(QIcon(self.movie.currentPixmap()))
@@ -118,7 +120,8 @@ class QPreview(QDialog):
     def statusThread(self, running):
         while not running.is_set():
             time.sleep(1)
-            self.status.emit(json.dumps(self.printer.GetStatusInformation()))
+            if self.printer:
+                self.status.emit(json.dumps(self.printer.GetStatusInformation()))
             
     def onStart(self):
         messages = QMessages(self.printer, self.printPreview)
@@ -128,8 +131,9 @@ class QPreview(QDialog):
 
     @pyqtSlot()
     def onPrintPreview(self):
-        self.lastImageHashKey = 0
+        self.lastImageHashKey = -1
         self.currentZoom = 1.0
+        self.onRefresh()
     
     def onPause(self):
         if self.state.get('State') == 'Paused':
@@ -157,6 +161,8 @@ class QPreview(QDialog):
             }
             
             self.message.setText(self.state['Message'])
+            
+            print(f'{hex(self.state["ImageHashKey"])} [{hex(self.lastImageHashKey)}]')
             
             if self.lastImageHashKey != self.state['ImageHashKey']:
                 self.lastImageHashKey = self.state['ImageHashKey']
