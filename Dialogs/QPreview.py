@@ -102,9 +102,10 @@ class QPreview(QDialog):
             
         if self.img:
             self.currentZoom = max(min(self.currentZoom + delta, 2.0), 0.25)
-            rescaled = self.img.scaled(self.img.width() * self.currentZoom, self.img.height() * self.currentZoom)
-            self.label.setPixmap(rescaled)
-            self.label.resize(rescaled.size())
+            if (self.img):
+                rescaled = self.img.scaled(int(self.img.width() * self.currentZoom), int(self.img.height() * self.currentZoom))
+                self.label.setPixmap(rescaled)
+                self.label.resize(rescaled.size())
         
     def mousePressEvent(self, event):
         if event.buttons() == Qt.LeftButton:
@@ -161,8 +162,6 @@ class QPreview(QDialog):
             }
             
             self.message.setText(self.state['Message'])
-            
-            print(f'{hex(self.state["ImageHashKey"])} [{hex(self.lastImageHashKey)}]')
             
             if self.lastImageHashKey != self.state['ImageHashKey']:
                 self.lastImageHashKey = self.state['ImageHashKey']

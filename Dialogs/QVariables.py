@@ -1,5 +1,6 @@
 import time
 from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QAbstractItemView, QDialog, QHeaderView, QLabel, QLineEdit, QPushButton, QTableWidget, QTextEdit, QWidget
 from PyQt5.uic import loadUi
 
@@ -36,6 +37,8 @@ class QVariables(QDialog):
         for i in message.counts:
             txt = QLineEdit()
             txt.setText(i)
+            txt.setValidator(QIntValidator())
+            txt.returnPressed.connect(self.onReturnPressed)
             self.table.setCellWidget(index, 0, QLabel('Count'))
             self.table.setCellWidget(index, 1, txt)
             self.table.setCellWidget(index, 2, QLabel()) # unique from possible DataSet column name 'Count'
@@ -44,6 +47,7 @@ class QVariables(QDialog):
         for i in message.dataSet:
             txt = QLineEdit()
             txt.setText(message.dataSet[i])
+            txt.returnPressed.connect(self.onReturnPressed)
             self.table.setCellWidget(index, 0, QLabel(i))
             self.table.setCellWidget(index, 1, txt)
             index += 1
@@ -56,11 +60,29 @@ class QVariables(QDialog):
             txt.setFocus()
             txt.selectAll()
 
+    def getIndex(self, label: QLineEdit) -> int:
+        for i in range(self.table.rowCount()):
+            if self.table.cellWidget(i, 1) == label:
+                return i
+        
+        return -1
+    
+    def onReturnPressed(self):
+        index = self.getIndex(self.sender())
+        print(index, self.table.rowCount())
+        
+        if (index < (self.table.rowCount() - 1)):
+            txt = self.table.cellWidget(index + 1, 1);
+            txt.setFocus()
+            txt.selectAll()
+        else:
+            self.onStart()
+        
     def onStart(self):
         main = resolveTopMostWidget(self)
         variables = dict()
         
-        for i in range(0, self.table.rowCount()):
+        for i in range(self.table.rowCount()):
             label = self.table.cellWidget(i, 0).text()
             
             if label == 'Count' and self.table.cellWidget(i, 2) != None:
