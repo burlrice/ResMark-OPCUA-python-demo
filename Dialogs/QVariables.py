@@ -19,8 +19,8 @@ class QVariables(QDialog):
         self.findChildren(QPushButton, 'cancel')[0].clicked.connect(self.onCancel)
 
         self.table = self.findChildren(QTableWidget, 'tableWidget')[0];
-        self.table.setColumnCount(2)
-        self.table.setHorizontalHeaderLabels(['Type', 'Value'])
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(['Type', 'Value', ''])
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.table.setColumnWidth(0, 150)
         self.table.horizontalHeader().setDefaultAlignment(Qt.AlignLeft);
@@ -31,10 +31,19 @@ class QVariables(QDialog):
         self.table.setRowCount(len(message.counts) + len(message.variables) + len(message.dataSet))
         
         index = 0
+
         for i in message.counts:
             txt = QLineEdit()
             txt.setText(i)
             self.table.setCellWidget(index, 0, QLabel('Count'))
+            self.table.setCellWidget(index, 1, txt)
+            self.table.setCellWidget(index, 2, QLabel()) # unique from possible DataSet column name 'Count'
+            index += 1
+
+        for i in message.dataSet:
+            txt = QLineEdit()
+            txt.setText(message.dataSet[i])
+            self.table.setCellWidget(index, 0, QLabel(i))
             self.table.setCellWidget(index, 1, txt)
             index += 1
         
@@ -53,8 +62,10 @@ class QVariables(QDialog):
         for i in range(0, self.table.rowCount()):
             label = self.table.cellWidget(i, 0).text()
             
-            if label == 'Count':
+            if label == 'Count' and self.table.cellWidget(i, 2) != None:
                 variables['Count'] = self.table.cellWidget(i, 1).text()
+            else:
+                variables[self.table.cellWidget(i, 0).text()] = self.table.cellWidget(i, 1).text()
             
         main.onPopNavigationStack()
     
@@ -63,7 +74,14 @@ class QVariables(QDialog):
             self.printer.SetMessageCount(int(variables['Count']))
             self.printPreview.emit()
         else:
-            print('TODO: other variables')
+            for i in self.message.document.xpath('//ProductObject//Variables//DataSet//ColumnValues//Column'):
+                if 'Value' in i.attrib:
+                    i.attrib['Value'] = variables[i.attrib['Name']]
+                    
+            self.printer.PrintMessage(str(self.message))
+    
+            if 'Count' in variables:
+                self.printer.SetMessageCount(int(variables['Count']))
 
             
     def onCancel(self):

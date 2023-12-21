@@ -128,7 +128,7 @@ class Printer:
         error = result[0]
         return result[1] if  len(error) == 0 else None
     
-    def x(self, xml: str) -> bool:
+    def PrintMessage(self, xml: str) -> bool:
         error = self.callMethod('PrintPrd', ua.Variant(xml, ua.VariantType.String), ua.Variant(1, ua.VariantType.Int32))
 
         return len(error) == 0

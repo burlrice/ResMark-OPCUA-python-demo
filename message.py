@@ -7,9 +7,12 @@ class Message:
         self.name = name
         self.counts = []
         self.variables = []
-
+        self.dataSet = {}
+        
         self.document = etree.fromstring(xml, etree.XMLParser(recover=True))
-        self.dataSet = [etree.tostring(i).decode() for i in self.document.xpath('//ProductObject//Variables//DataSet//ColumnValues//Column')]
+
+        for i in self.document.xpath('//ProductObject//Variables//DataSet//ColumnValues//Column'):
+            self.dataSet[i.attrib.get('Name')] = i.attrib.get('Value')
 
         for i in self.document.xpath('.//FieldObject'):
             xsiType = i.attrib.get('xsi:type')
@@ -17,7 +20,8 @@ class Message:
             if xsiType == 'CountFieldObject':
                 self.counts.append(i.attrib.get('StartCount'))
             elif xsiType == 'VarFieldObject':
-                self.variables.append(etree.tostring(i).decode().strip())
+                # TODO self.variables.append(etree.tostring(i).decode().strip())
+                print('TODO')
                 
     def __str__(self):
         if self.document:
