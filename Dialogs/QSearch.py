@@ -1,15 +1,13 @@
-import os
 import re
 import socket
 import select
 import threading
 
-from PyQt5 import QtCore
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QLabel, QPushButton, QTableWidget
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QTimer, QSize, Qt, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QMovie, QPixmap
+from PyQt5.QtGui import QIcon, QMovie
 
 from .path import resolveTopMostWidget, resolveUi, resolveImage
 from printer import Printer

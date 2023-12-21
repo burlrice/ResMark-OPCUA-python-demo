@@ -3,10 +3,11 @@ from lxml import etree
 class Message:
     counts = []
     variables = []
+    dataSet = []
     
     def __init__(self, xml: str = None):
         self.document = etree.fromstring(xml, etree.XMLParser(recover=True))
-        self.dataSet = self.document.xpath('//ProductObject//Variables//DataSet//ColumnValues//Column')
+        self.dataSet = [etree.tostring(i).decode() for i in self.document.xpath('//ProductObject//Variables//DataSet//ColumnValues//Column')]
 
         for i in self.document.xpath('.//FieldObject'):
             xsiType = i.attrib.get('xsi:type')

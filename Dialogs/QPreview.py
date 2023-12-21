@@ -1,19 +1,17 @@
 import json
-import os
-import re
 import threading
 import time
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import Qt, QPoint, pyqtSignal, pyqtSlot
-from PyQt5.QtGui import QIcon, QImage, QMovie, QPixmap, QWheelEvent
-from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QScrollArea, QToolButton, QWidget
+from PyQt5.QtGui import QIcon, QImage, QMovie, QPixmap
+from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QScrollArea, QToolButton
 from PyQt5.uic import loadUi
 
 from Dialogs.QMessages import QMessages
+from Dialogs.QVariables import QVariables
 from Dialogs.busy import Busy
 
-from .path import resolveTopMostWidget, resolveUi, resolveData, resolveImage
+from .path import resolveTopMostWidget, resolveUi, resolveImage
 from printer import Printer
 from config import Config
 from message import Message
@@ -123,30 +121,27 @@ class QPreview(QDialog):
             self.status.emit(json.dumps(self.printer.GetStatusInformation()))
             
     def onStart(self):
-        main = resolveTopMostWidget(self);
         messages = QMessages(self.startMessage)
         messages.messages = self.printer.GetStoredMessageList()
-        main.onPushNavigationStack(messages)
+        messages.selected = self.printer.GetStatusInformation()[1]
+        resolveTopMostWidget(self).onPushNavigationStack(messages)
 
     @pyqtSlot(str)
     def onStartMessage(self, message):
-        with Busy(self) as busy:
-            doc = Message(self.printer.RecallMessage(message))
-            
-            if len(doc.counts):
-                print('counts')
-
-            if len(doc.variables):
-                print('variables')
-                
-            self.printer.PathPrintStoredMessage('', message)
-            self.img = None
-
-            while self.img == None:
-                self.img = self.printer.PrintPreviewCurrentCompressed()
-                time.sleep(.25)
+        doc = Message(self.printer.RecallMessage(message))
+        dlg = QVariables(self, doc)
+        dlg.setModal(True)
         
-            self.currentZoom = 1.0
+        if dlg.exec_() == QDialog.Accepted:
+            with Busy(self) as busy:
+                self.printer.PathPrintStoredMessage('', message)
+                self.img = None
+
+                while self.img == None:
+                    self.img = self.printer.PrintPreviewCurrentCompressed()
+                    time.sleep(.25)
+        
+                self.currentZoom = 1.0
     
     def onPause(self):
         if self.state.get('State') == 'Paused':

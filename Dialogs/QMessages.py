@@ -1,5 +1,4 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QIcon, QImage
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QListWidget, QPushButton
 from PyQt5.uic import loadUi
 
@@ -7,6 +6,7 @@ from .path import resolveTopMostWidget, resolveUi
 
 class QMessages(QDialog):
     messages = []
+    selected = None
     
     def __init__(self, startMessageSignal: pyqtSignal):
         super().__init__()
@@ -21,7 +21,12 @@ class QMessages(QDialog):
         
     def setVisible(self, visible: bool):
         super().setVisible(visible)
-        self.listWidget.addItems(self.messages)
+
+        if visible:
+            self.listWidget.addItems(self.messages)
+            find = self.listWidget.findItems(self.selected, Qt.MatchExactly)
+            if len(find):
+                self.listWidget.setCurrentItem(find[0])
         
     def onStart(self):
         if self.listWidget.currentItem():

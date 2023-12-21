@@ -1,8 +1,10 @@
-from enum import Enum
 import zlib
 import re
 
+from enum import Enum
 from opcua import Client, ua
+
+from Dialogs.path import resolveMessage
 
 class Printer:
     class Errors:
@@ -80,6 +82,7 @@ class Printer:
         error = result[0]
         result = result[1:][0] if len(error) == 0 else []
         result = [file for file in result if not file.lower().endswith('.prd')]
+        result = [re.sub(r'\.[^.]+$', '', file) for file in result]
         return result
             
     def PrintPreviewCurrentCompressed(self):
@@ -98,7 +101,7 @@ class Printer:
         result = self.callMethod('PathPrintStoredMessage', 
                                  ua.Variant(1, ua.VariantType.Int32), 
                                  ua.Variant(folder, ua.VariantType.String), 
-                                 ua.Variant(message, ua.VariantType.String))
+                                 ua.Variant(resolveMessage(message), ua.VariantType.String))
         return result == ua.StatusCodes.Good
 
     def StopPrinting(self) -> bool:
@@ -117,7 +120,7 @@ class Printer:
         return len(result) == 0
     
     def RecallMessage(self, message: str) -> str:
-        result = self.callMethod('RecallMessage', message)
+        result = self.callMethod('RecallMessage', resolveMessage(message))
         error = result[0]
         return result[1] if  len(error) == 0 else None
     
