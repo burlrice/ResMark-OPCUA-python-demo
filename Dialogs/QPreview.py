@@ -19,7 +19,7 @@ from message import Message
 class QPreview(QDialog):
     printer = None
     refreshComplete = pyqtSignal(QPixmap)
-    startMessage = pyqtSignal(str)
+    printPreview = pyqtSignal()
     status = pyqtSignal(str)
     state = {}
     lastImageHashKey = 0
@@ -42,7 +42,7 @@ class QPreview(QDialog):
         self.stop = self.findChildren(QPushButton, 'stop')[0];
 
         self.refreshComplete.connect(self.onRefreshComplete)
-        self.startMessage.connect(self.onStartMessage)
+        self.printPreview.connect(self.onPrintPreview)
         self.status.connect(self.onStatus)
         self.refreshIcon = self.refresh.icon()
         self.scrollArea.wheelEvent = lambda event: self.zoom(event)
@@ -121,27 +121,15 @@ class QPreview(QDialog):
             self.status.emit(json.dumps(self.printer.GetStatusInformation()))
             
     def onStart(self):
-        messages = QMessages(self.startMessage)
+        messages = QMessages(self.printer, self.printPreview)
         messages.messages = self.printer.GetStoredMessageList()
         messages.selected = self.printer.GetStatusInformation()[1]
         resolveTopMostWidget(self).onPushNavigationStack(messages)
 
-    @pyqtSlot(str)
-    def onStartMessage(self, message):
-        doc = Message(self.printer.RecallMessage(message))
-        dlg = QVariables(self, doc)
-        dlg.setModal(True)
-        
-        if dlg.exec_() == QDialog.Accepted:
-            with Busy(self) as busy:
-                self.printer.PathPrintStoredMessage('', message)
-                self.img = None
-
-                while self.img == None:
-                    self.img = self.printer.PrintPreviewCurrentCompressed()
-                    time.sleep(.25)
-        
-                self.currentZoom = 1.0
+    @pyqtSlot()
+    def onPrintPreview(self):
+        self.lastImageHashKey = 0
+        self.currentZoom = 1.0
     
     def onPause(self):
         if self.state.get('State') == 'Paused':

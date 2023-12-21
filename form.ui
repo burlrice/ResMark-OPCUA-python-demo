@@ -23,6 +23,24 @@
 	outline: none;
 }
 
+QTextEdit
+{
+	background-color: transparent;
+	border: 0px;
+	font-size: 18px;
+	font-family: &quot;Roboto&quot;;
+	outline: none;
+}
+
+QLineEdit
+{
+	background-color: transparent;
+	border: 0px;
+	font-size: 18px;
+	font-family: &quot;Roboto&quot;;
+	outline: none;
+}
+
 QPushButton
 {
 	background-color: transparent;

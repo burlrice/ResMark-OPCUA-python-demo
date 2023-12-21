@@ -1,3 +1,4 @@
+from pickletools import uint8
 import zlib
 import re
 
@@ -103,7 +104,10 @@ class Printer:
                                  ua.Variant(folder, ua.VariantType.String), 
                                  ua.Variant(resolveMessage(message), ua.VariantType.String))
         return result == ua.StatusCodes.Good
-
+    
+    def SetMessageCount(self, count: int) -> None:
+        self.callMethod('SetMessageCount', ua.Variant(count, ua.VariantType.UInt64))
+        
     def StopPrinting(self) -> bool:
         result = self.callMethod('StopPrinting', ua.Variant(1, ua.VariantType.Int32))
         
