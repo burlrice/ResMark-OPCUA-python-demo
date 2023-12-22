@@ -158,7 +158,7 @@ class QPreview(QDialog):
                 'Consumable': data[4],
                 'Errors': data[5],
                 'Warnings': data[6],
-                'ImageHashKey': data[7]
+                'ImageHashKey': data[7] if len(data) > 7 else format(str(data[3][0]).split(':')[1])
             }
             
             self.message.setText(self.state['Message'])
